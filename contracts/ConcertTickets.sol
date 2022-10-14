@@ -1,6 +1,7 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "../interfaces/IFactory.sol";
 
 contract ConcertTickets is ERC721 {
     address private _artist;
@@ -14,12 +15,17 @@ contract ConcertTickets is ERC721 {
     event Log(string message, uint256 data);
 
     modifier onlyArtist() {
-        require(msg.sender == _artist);
+        require(msg.sender == _artist, "TICKET: Not Artist");
         _;
     }
 
     modifier onlyFactory() {
-        require(msg.sender == _factory);
+        require(msg.sender == _factory, "TICKET: Not Factory");
+        _;
+    }
+
+    modifier onlyMarket() {
+        require(msg.sender == _factory, "TICKET: Not Market");
         _;
     }
 
@@ -30,7 +36,7 @@ contract ConcertTickets is ERC721 {
         uint8 numTier_,
         uint256[] memory tierMaxSupply_,
         uint256[] memory tierPrice_
-    ) public ERC721(name_, symbol_) {
+    ) ERC721(name_, symbol_) {
         _artist = tx.origin;
         _factory = msg.sender;
         _protocolFee = protocolFee_;
@@ -49,10 +55,8 @@ contract ConcertTickets is ERC721 {
         payable(to_).transfer(amount_ - toProtocol_);
     }
 
-    function mint(uint8 tier_, address to_) public payable onlyFactory {
-        emit Log("enterFunc", 0);
+    function mint(uint8 tier_, address to_) public payable onlyMarket {
         require(tier_ < _numTier, "TICKET: Tier Invalid");
-        emit Log("tierCheck", 0);
 
         // Check amount ETH
         require(msg.value >= _tierPrice[tier_], "TICKET: Not Enough Funds");
@@ -74,7 +78,6 @@ contract ConcertTickets is ERC721 {
 
         // update variables
         _tierSupply[tier_] += 1;
-        emit Log("done", 0);
     }
 
     function artist() public view returns (address) {
@@ -83,6 +86,10 @@ contract ConcertTickets is ERC721 {
 
     function factory() public view returns (address) {
         return _factory;
+    }
+
+    function market() public view returns (address) {
+        return IFactory(_factory).market();
     }
 
     function protocolFee() public view returns (uint8) {

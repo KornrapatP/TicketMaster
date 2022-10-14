@@ -2,6 +2,9 @@ dependencies:
   - OpenZeppelin/openzeppelin-contracts@4.3.2
 compiler:
   solc:
+    optimizer:
+      enabled: true
+      runs: 800
     remappings:
       - '@openzeppelin=OpenZeppelin/openzeppelin-contracts@4.3.2'
 dotenv: .env
