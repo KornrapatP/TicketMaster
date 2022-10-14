@@ -1,9 +1,9 @@
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Royalty.sol";
 import "../interfaces/IFactory.sol";
 
-contract ConcertTickets is ERC721 {
+contract ConcertTickets is ERC721Royalty {
     address private _artist;
     address private _factory;
     uint256[] private _tierSupply;
@@ -46,6 +46,7 @@ contract ConcertTickets is ERC721 {
             _tierPrice.push(tierPrice_[i]);
             _tierSupply.push(0);
         }
+        _setDefaultRoyalty(address(this), 100);
     }
 
     function withdraw(address to_) external onlyArtist {
