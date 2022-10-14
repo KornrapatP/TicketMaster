@@ -21,7 +21,8 @@ contract Factory {
         uint8 protocolFee_,
         uint8 numTier_,
         uint256[] memory tierMaxSupply_,
-        uint256[] memory tierPrice_
+        uint256[] memory tierPrice_,
+        string[] memory tierURI_
     ) external returns (address) {
         ConcertTickets collection = new ConcertTickets(
             name_,
@@ -29,7 +30,8 @@ contract Factory {
             protocolFee_,
             numTier_,
             tierMaxSupply_,
-            tierPrice_
+            tierPrice_,
+            tierURI_
         );
         // Save mapping artist -> Collection
 

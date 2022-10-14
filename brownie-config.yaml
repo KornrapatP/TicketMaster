@@ -1,12 +1,12 @@
 dependencies:
-  - OpenZeppelin/openzeppelin-contracts@4.3.2
+  - OpenZeppelin/openzeppelin-contracts@4.8.0-rc.1
 compiler:
   solc:
     optimizer:
       enabled: true
       runs: 800
     remappings:
-      - '@openzeppelin=OpenZeppelin/openzeppelin-contracts@4.3.2'
+      - '@openzeppelin=OpenZeppelin/openzeppelin-contracts@4.8.0-rc.1'
 dotenv: .env
 networks:
   default: development

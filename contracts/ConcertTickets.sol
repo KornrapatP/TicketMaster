@@ -1,14 +1,16 @@
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Royalty.sol";
+import "@openzeppelin/contracts/token/common/ERC2981.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "../interfaces/IFactory.sol";
 
-contract ConcertTickets is ERC721Royalty {
+contract ConcertTickets is ERC721URIStorage, ERC2981 {
     address private _artist;
     address private _factory;
     uint256[] private _tierSupply;
     uint256[] private _tierMaxSupply;
     uint256[] private _tierPrice;
+    string[] private _tierURI;
     uint8 _numTier;
     uint8 _protocolFee; // Percentage
 
@@ -35,7 +37,8 @@ contract ConcertTickets is ERC721Royalty {
         uint8 protocolFee_,
         uint8 numTier_,
         uint256[] memory tierMaxSupply_,
-        uint256[] memory tierPrice_
+        uint256[] memory tierPrice_,
+        string[] memory tierURI_
     ) ERC721(name_, symbol_) {
         _artist = tx.origin;
         _factory = msg.sender;
@@ -45,8 +48,9 @@ contract ConcertTickets is ERC721Royalty {
             _tierMaxSupply.push(tierMaxSupply_[i]);
             _tierPrice.push(tierPrice_[i]);
             _tierSupply.push(0);
+            _tierURI.push(tierURI_[i]);
         }
-        _setDefaultRoyalty(address(this), 100);
+        _setDefaultRoyalty(msg.sender, 100);
     }
 
     function withdraw(address to_) external onlyArtist {
@@ -76,6 +80,9 @@ contract ConcertTickets is ERC721Royalty {
 
         // Mints
         _safeMint(to_, id_);
+
+        // Sets URI
+        _setTokenURI(id_, _tierURI[tier_]);
 
         // update variables
         _tierSupply[tier_] += 1;
@@ -114,5 +121,20 @@ contract ConcertTickets is ERC721Royalty {
     function tierPrice(uint8 tier_) public view returns (uint256) {
         require(tier_ < _numTier, "TICKET: Nonexistent");
         return _tierPrice[tier_];
+    }
+
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(ERC721, ERC2981)
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
+    }
+
+    function _burn(uint256 tokenId) internal virtual override {
+        super._burn(tokenId);
+        _resetTokenRoyalty(tokenId);
     }
 }

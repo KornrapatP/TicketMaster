@@ -10,6 +10,7 @@ protocolFee = 50
 tierPrice = [1, 10, 100, 1000, 10000]
 tierMaxSupply = [10, 10, 10, 10, 10]
 tierSupply = [0, 0, 0, 0, 0]
+tierURI = ["a", "b", "c", "d", "e"]
 
 
 @pytest.fixture
@@ -22,6 +23,7 @@ def concert_tickets():
         numTier,
         tierMaxSupply,
         tierPrice,
+        tierURI,
     )
 
 

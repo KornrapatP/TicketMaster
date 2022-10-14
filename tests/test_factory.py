@@ -10,6 +10,7 @@ protocolFee = 50
 tierPrice = [1, 10, 100, 1000, 10000]
 tierMaxSupply = [10, 10, 10, 10, 10]
 tierSupply = [0, 0, 0, 0, 0]
+tierURI = ["a", "b", "c", "d", "e"]
 
 
 @pytest.fixture
@@ -43,7 +44,14 @@ def test_set_market(factory, owner, artist, market):
 def test_create_collection(factory, owner, artist, market):
     factory.setMarket(market, {"from": owner})
     collection = factory.createCollection(
-        name, symbol, protocolFee, numTier, tierMaxSupply, tierPrice, {"from": artist}
+        name,
+        symbol,
+        protocolFee,
+        numTier,
+        tierMaxSupply,
+        tierPrice,
+        tierURI,
+        {"from": artist},
     )
     # assert collection == ""
 
