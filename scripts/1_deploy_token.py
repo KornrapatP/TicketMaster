@@ -12,3 +12,4 @@ def main():
     erc20 = TokenERC20.deploy(
         initial_supply, token_name, token_symbol, {"from": account}
     )
+    print(erc20.decimals({"from": account}))
