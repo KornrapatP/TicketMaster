@@ -1,6 +1,6 @@
 import pytest
 
-from brownie import ConcertTickets, accounts
+from brownie import ConcertTickets, accounts, Factory
 import brownie
 
 name = "TestExample"
@@ -14,9 +14,28 @@ tierURI = ["a", "b", "c", "d", "e"]
 
 
 @pytest.fixture
-def concert_tickets():
-    return accounts[0].deploy(
-        ConcertTickets,
+def owner():
+    return accounts[0]
+
+
+@pytest.fixture
+def artist():
+    return accounts[1]
+
+
+@pytest.fixture
+def market():  # dummy
+    return accounts[2]
+
+
+@pytest.fixture
+def factory(owner, artist, market):
+    return owner.deploy(Factory, owner)
+
+
+def create_collection(factory, owner, artist, market):
+    factory.setMarket(market, {"from": owner})
+    collection = factory.createCollection(
         name,
         symbol,
         protocolFee,
@@ -24,10 +43,15 @@ def concert_tickets():
         tierMaxSupply,
         tierPrice,
         tierURI,
+        {"from": artist},
     )
 
+    collection = ConcertTickets.at(collection.return_value)
+    return collection
 
-def test_metadata(concert_tickets):
+
+def test_metadata(factory, owner, artist, market):
+    concert_tickets = create_collection(factory, owner, artist, market)
     assert concert_tickets.symbol() == symbol
     assert concert_tickets.name() == name
     assert concert_tickets.numTier() == numTier
@@ -38,33 +62,27 @@ def test_metadata(concert_tickets):
         assert concert_tickets.tierPrice(i) == tierPrice[i]
 
 
-def test_mint_basic(concert_tickets):
+def test_mint_basic(factory, owner, artist, market):
+    concert_tickets = create_collection(factory, owner, artist, market)
     # Pass
     for i in range(numTier):
-        concert_tickets.mint(
-            i, accounts[0], {"value": tierPrice[i], "from": accounts[0]}
-        )
-        assert concert_tickets.balanceOf(accounts[0]) == i + 1
+        concert_tickets.mint(i, market, {"value": tierPrice[i], "from": market})
+        assert concert_tickets.balanceOf(market) == i + 1
 
     # Fail Fund
     for i in range(numTier):
         with brownie.reverts("TICKET: Not Enough Funds"):
-            concert_tickets.mint(
-                i, accounts[0], {"value": tierPrice[i] - 1, "from": accounts[0]}
-            )
+            concert_tickets.mint(i, market, {"value": tierPrice[i] - 1, "from": market})
 
 
-def test_mint_max_supply(concert_tickets):
+def test_mint_max_supply(factory, owner, artist, market):
+    concert_tickets = create_collection(factory, owner, artist, market)
     # Pass
     totalTix = 0
     for i in range(numTier):
         for j in range(tierMaxSupply[i]):
-            concert_tickets.mint(
-                i, accounts[0], {"value": tierPrice[i], "from": accounts[0]}
-            )
+            concert_tickets.mint(i, market, {"value": tierPrice[i], "from": market})
             totalTix += 1
-            assert concert_tickets.balanceOf(accounts[0]) == totalTix
+            assert concert_tickets.balanceOf(market) == totalTix
         with brownie.reverts("TICKET: Sold Out"):
-            concert_tickets.mint(
-                i, accounts[0], {"value": tierPrice[i], "from": accounts[0]}
-            )
+            concert_tickets.mint(i, market, {"value": tierPrice[i], "from": market})

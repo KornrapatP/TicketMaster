@@ -2,17 +2,22 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/common/ERC2981.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
+
 import "../interfaces/IFactory.sol";
 
 contract ConcertTickets is ERC721URIStorage, ERC2981 {
+    using Address for address;
+
     address private _artist;
     address private _factory;
     uint256[] private _tierSupply;
     uint256[] private _tierMaxSupply;
     uint256[] private _tierPrice;
     string[] private _tierURI;
-    uint8 _numTier;
-    uint8 _protocolFee; // Percentage
+    uint8 private _numTier;
+    uint8 private _protocolFee; // Percentage
+    bool private _locked;
 
     event Log(string message, uint256 data);
 
@@ -27,7 +32,7 @@ contract ConcertTickets is ERC721URIStorage, ERC2981 {
     }
 
     modifier onlyMarket() {
-        require(msg.sender == _factory, "TICKET: Not Market");
+        require(msg.sender == market(), "TICKET: Not Market");
         _;
     }
 
@@ -44,6 +49,7 @@ contract ConcertTickets is ERC721URIStorage, ERC2981 {
         _factory = msg.sender;
         _protocolFee = protocolFee_;
         _numTier = numTier_;
+        _locked = true;
         for (uint256 i = 0; i < numTier_; i++) {
             _tierMaxSupply.push(tierMaxSupply_[i]);
             _tierPrice.push(tierPrice_[i]);
@@ -51,6 +57,10 @@ contract ConcertTickets is ERC721URIStorage, ERC2981 {
             _tierURI.push(tierURI_[i]);
         }
         _setDefaultRoyalty(msg.sender, 100);
+    }
+
+    function unlock() external onlyArtist {
+        _locked = false;
     }
 
     function withdraw(address to_) external onlyArtist {
@@ -61,6 +71,12 @@ contract ConcertTickets is ERC721URIStorage, ERC2981 {
     }
 
     function mint(uint8 tier_, address to_) public payable onlyMarket {
+        // Check to_ EOA
+        if (_locked) {
+            require(!to_.isContract(), "TICKET: Recipient is Contract");
+        }
+
+        // Check tier
         require(tier_ < _numTier, "TICKET: Tier Invalid");
 
         // Check amount ETH
@@ -123,6 +139,10 @@ contract ConcertTickets is ERC721URIStorage, ERC2981 {
         return _tierPrice[tier_];
     }
 
+    function locked() public view returns (bool) {
+        return _locked;
+    }
+
     function supportsInterface(bytes4 interfaceId)
         public
         view
@@ -136,5 +156,24 @@ contract ConcertTickets is ERC721URIStorage, ERC2981 {
     function _burn(uint256 tokenId) internal virtual override {
         super._burn(tokenId);
         _resetTokenRoyalty(tokenId);
+    }
+
+    function _transfer(
+        address from,
+        address to,
+        uint256 tokenId
+    ) internal override {
+        if (_locked) {
+            require(!to.isContract(), "TICKET: Recipient is Contract");
+        }
+        super._transfer(from, to, tokenId);
+    }
+
+    function approve(address to, uint256 tokenId) public virtual override {
+        // Only approve market
+        if (_locked) {
+            require(to == market(), "TICKET: Only approve market");
+        }
+        super.approve(to, tokenId);
     }
 }
