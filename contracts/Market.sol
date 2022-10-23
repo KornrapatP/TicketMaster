@@ -38,8 +38,10 @@ contract Market {
         address to_
     ) public payble {
         require(_isListed[collection_][tier_], "MARKET: Item not listed");
-        uint256 artistFee_ = (_listing[collection_][tier_] *
-            ConcertTickets(collection_).secondarySaleFee()) / 1000;
+        uint256 artistFee_ = ConcertTickets(collection_).royaltyInfo(
+            id_,
+            _listing[collection_][tier_]
+        );
         require(
             _listing[collection_][tier_] + artistFee_ <= msg.value,
             "MARKET: Insufficient fund"
