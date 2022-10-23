@@ -5,6 +5,7 @@ import "./ConcertTickets.sol";
 contract Factory {
     address private _owner;
     address private _market;
+    ConcertTickets[] private _ticketCollections;
 
     modifier onlyOwner() {
         require(msg.sender == _owner, "FACTORY: Not Owner");
@@ -34,6 +35,7 @@ contract Factory {
             tierURI_
         );
         // Save mapping artist -> Collection
+        _ticketCollections.push(collection);
 
         return address(collection);
     }
@@ -48,5 +50,9 @@ contract Factory {
 
     function market() public view returns (address) {
         return _market;
+    }
+
+    function ticketCollections(uint256 index_) public view returns (address) {
+        return address(_ticketCollections[index_]);
     }
 }

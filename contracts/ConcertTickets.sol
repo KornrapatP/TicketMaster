@@ -17,6 +17,7 @@ contract ConcertTickets is ERC721URIStorage, ERC2981 {
     string[] private _tierURI;
     uint8 private _numTier;
     uint8 private _protocolFee; // Percentage
+    uint8 private _secondarySaleFee;
     bool private _locked;
 
     event Log(string message, uint256 data);
@@ -102,6 +103,14 @@ contract ConcertTickets is ERC721URIStorage, ERC2981 {
 
         // update variables
         _tierSupply[tier_] += 1;
+    }
+
+    function setSecondarySaleFee(uint8 secondarySaleFee_) external onlyArtist {
+        _secondarySaleFee = secondarySaleFee_;
+    }
+
+    function secondarySaleFee() public view returns (uint256) {
+        return _secondarySaleFee;
     }
 
     function artist() public view returns (address) {
