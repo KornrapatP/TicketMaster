@@ -5,7 +5,8 @@ import "./ConcertTickets.sol";
 contract Factory {
     address private _owner;
     address private _market;
-    ConcertTickets[] private _ticketCollections;
+    address[] private _ticketCollections;
+    uint256 _totalEvents;
 
     modifier onlyOwner() {
         require(msg.sender == _owner, "FACTORY: Not Owner");
@@ -18,6 +19,7 @@ contract Factory {
 
     function createCollection(
         string memory name_,
+        uint256 eventTime_,
         string memory symbol_,
         uint8 protocolFee_,
         uint8 numTier_,
@@ -27,6 +29,7 @@ contract Factory {
     ) external returns (address) {
         ConcertTickets collection = new ConcertTickets(
             name_,
+            eventTime_,
             symbol_,
             protocolFee_,
             numTier_,
@@ -35,7 +38,8 @@ contract Factory {
             tierURI_
         );
         // Save mapping artist -> Collection
-        _ticketCollections.push(collection);
+        _ticketCollections.push(address(collection));
+        _totalEvents += 1;
 
         return address(collection);
     }
@@ -52,7 +56,11 @@ contract Factory {
         return _market;
     }
 
-    function ticketCollections(uint256 index_) public view returns (address) {
-        return address(_ticketCollections[index_]);
+    function ticketCollections() public view returns (address[] memory) {
+        return _ticketCollections;
+    }
+
+    function totalEvents() public view returns (uint256) {
+        return _totalEvents;
     }
 }

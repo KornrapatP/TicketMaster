@@ -7,7 +7,8 @@ interface IFactory {
         uint8 protocolFee_,
         uint8 numTier_,
         uint256[] memory tierMaxSupply_,
-        uint256[] memory tierPrice_
+        uint256[] memory tierPrice_,
+        string[] memory tierURI_
     ) external returns (address);
 
     function setMarket(address market_) external;
@@ -15,4 +16,8 @@ interface IFactory {
     function owner() external view returns (address);
 
     function market() external view returns (address);
+
+    function ticketCollections() external view returns (address[] memory);
+
+    function totalEvents() external view returns (uint256);
 }

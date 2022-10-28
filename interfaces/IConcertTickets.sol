@@ -3,11 +3,17 @@ pragma solidity ^0.8.0;
 interface IConcertTickets {
     event Log(string message, uint256 data);
 
+    function setRoyalty(uint96 royalty_) external;
+
+    function unlock() external;
+
     function withdraw(address to_) external;
 
     function mint(uint8 tier_, address to_) external payable;
 
     function artist() external view returns (address);
+
+    function eventTime() external view returns (uint256);
 
     function factory() external view returns (address);
 
@@ -22,4 +28,10 @@ interface IConcertTickets {
     function tierMaxSupply(uint8 tier_) external view returns (uint256);
 
     function tierPrice(uint8 tier_) external view returns (uint256);
+
+    function locked() external view returns (bool);
+
+    function supportsInterface(bytes4 interfaceId) external view returns (bool);
+
+    function approve(address to, uint256 tokenId) external;
 }

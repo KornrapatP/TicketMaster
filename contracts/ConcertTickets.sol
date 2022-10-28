@@ -10,6 +10,7 @@ contract ConcertTickets is ERC721URIStorage, ERC2981 {
     using Address for address;
 
     address private _artist;
+    uint256 private _eventTime;
     address private _factory;
     uint256[] private _tierSupply;
     uint256[] private _tierMaxSupply;
@@ -20,6 +21,7 @@ contract ConcertTickets is ERC721URIStorage, ERC2981 {
     bool private _locked;
 
     event Log(string message, uint256 data);
+    event Received(address, uint256);
 
     modifier onlyArtist() {
         require(msg.sender == _artist, "TICKET: Not Artist");
@@ -38,6 +40,7 @@ contract ConcertTickets is ERC721URIStorage, ERC2981 {
 
     constructor(
         string memory name_,
+        uint256 eventTime_,
         string memory symbol_,
         uint8 protocolFee_,
         uint8 numTier_,
@@ -46,6 +49,7 @@ contract ConcertTickets is ERC721URIStorage, ERC2981 {
         string[] memory tierURI_
     ) ERC721(name_, symbol_) {
         _artist = tx.origin;
+        _eventTime = eventTime_;
         _factory = msg.sender;
         _protocolFee = protocolFee_;
         _numTier = numTier_;
@@ -56,10 +60,14 @@ contract ConcertTickets is ERC721URIStorage, ERC2981 {
             _tierSupply.push(0);
             _tierURI.push(tierURI_[i]);
         }
-        _setDefaultRoyalty(address(this), 100);
+        _setDefaultRoyalty(address(this), 1000); // 10%
     }
 
-    function setRoyalty(uint256 royalty_) external onlyArtist {
+    receive() external payable {
+        emit Received(msg.sender, msg.value);
+    }
+
+    function setRoyalty(uint96 royalty_) external onlyArtist {
         _setDefaultRoyalty(address(this), royalty_);
     }
 
@@ -110,6 +118,10 @@ contract ConcertTickets is ERC721URIStorage, ERC2981 {
 
     function artist() public view returns (address) {
         return _artist;
+    }
+
+    function eventTime() public view returns (uint256) {
+        return _eventTime;
     }
 
     function factory() public view returns (address) {

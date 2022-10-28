@@ -11,6 +11,7 @@ tierPrice = [1, 10, 100, 1000, 10000]
 tierMaxSupply = [10, 10, 10, 10, 10]
 tierSupply = [0, 0, 0, 0, 0]
 tierURI = ["a", "b", "c", "d", "e"]
+eventTime = 100000
 
 
 @pytest.fixture
@@ -37,6 +38,7 @@ def create_collection(factory, owner, artist, market):
     factory.setMarket(market, {"from": owner})
     collection = factory.createCollection(
         name,
+        eventTime,
         symbol,
         protocolFee,
         numTier,
