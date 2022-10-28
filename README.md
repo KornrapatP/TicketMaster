@@ -46,8 +46,6 @@ brownie run scripts/1_deploy_token.sol
 
 # TODO
 
-1. Unit test market
-2. Integration Test
-3. Clean up access control
-4. Variable packing
-5. Logic gas optimization
+1. Clean up access control
+2. Variable packing
+3. Logic gas optimization
