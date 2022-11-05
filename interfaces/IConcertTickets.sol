@@ -37,6 +37,8 @@ interface IConcertTickets {
 
     function tierPrice(uint8 tier_) external view returns (uint256);
 
+    function tierURI(uint8 tier_) external view returns (string memory);
+
     function locked() external view returns (bool);
 
     function supportsInterface(bytes4 interfaceId) external view returns (bool);

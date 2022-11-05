@@ -54,6 +54,7 @@ contract ConcertTickets is ERC721URIStorage, ERC2981 {
     ) ERC721(name_, symbol_) {
         _artist = tx.origin;
         _eventTime = eventTime_;
+        _location = location_;
         _factory = msg.sender;
         _protocolFee = protocolFee_;
         _URI = URI_;
@@ -166,6 +167,11 @@ contract ConcertTickets is ERC721URIStorage, ERC2981 {
     function tierPrice(uint8 tier_) public view returns (uint256) {
         require(tier_ < _numTier, "TICKET: Nonexistent");
         return _tierPrice[tier_];
+    }
+
+    function tierURI(uint8 tier_) public view returns (string memory) {
+        require(tier_ < _numTier, "TICKET: Nonexistent");
+        return string(_tierURI[tier_]);
     }
 
     function locked() public view returns (bool) {
