@@ -11,7 +11,13 @@ interface IConcertTickets {
 
     function mint(uint8 tier_, address to_) external payable;
 
+    function name() external view returns (string memory);
+
+    function symbol() external view returns (string memory);
+
     function artist() external view returns (address);
+
+    function location() external view returns (string memory);
 
     function eventTime() external view returns (uint256);
 
