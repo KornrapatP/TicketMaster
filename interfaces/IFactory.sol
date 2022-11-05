@@ -7,6 +7,7 @@ interface IFactory {
         string memory location_,
         string memory symbol_,
         uint8 protocolFee_,
+        string memory URI_,
         uint8 numTier_,
         uint256[] memory tierMaxSupply_,
         uint256[] memory tierPrice_,

@@ -12,6 +12,7 @@ contract ConcertTickets is ERC721URIStorage, ERC2981 {
     address private _artist;
     string private _location;
     uint256 private _eventTime;
+    string private _URI;
     address private _factory;
     uint256[] private _tierSupply;
     uint256[] private _tierMaxSupply;
@@ -45,6 +46,7 @@ contract ConcertTickets is ERC721URIStorage, ERC2981 {
         string memory location_,
         string memory symbol_,
         uint8 protocolFee_,
+        string memory URI_,
         uint8 numTier_,
         uint256[] memory tierMaxSupply_,
         uint256[] memory tierPrice_,
@@ -54,6 +56,7 @@ contract ConcertTickets is ERC721URIStorage, ERC2981 {
         _eventTime = eventTime_;
         _factory = msg.sender;
         _protocolFee = protocolFee_;
+        _URI = URI_;
         _numTier = numTier_;
         _locked = true;
         for (uint256 i = 0; i < numTier_; i++) {
@@ -124,6 +127,10 @@ contract ConcertTickets is ERC721URIStorage, ERC2981 {
 
     function location() public view returns (string memory) {
         return _location;
+    }
+
+    function URI() public view returns (string memory) {
+        return _URI;
     }
 
     function eventTime() public view returns (uint256) {

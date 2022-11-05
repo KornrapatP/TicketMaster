@@ -23,6 +23,8 @@ interface IConcertTickets {
 
     function factory() external view returns (address);
 
+    function URI() public view returns (string memory);
+
     function market() external view returns (address);
 
     function protocolFee() external view returns (uint8);
