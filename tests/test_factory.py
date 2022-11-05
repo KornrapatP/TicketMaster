@@ -5,6 +5,7 @@ import brownie
 
 name = "TestExample"
 symbol = "TEX"
+location = "Berkeley"
 numTier = 5
 protocolFee = 50
 tierPrice = [1, 10, 100, 1000, 10000]
@@ -47,6 +48,7 @@ def test_create_collection(factory, owner, artist, market):
     collection = factory.createCollection(
         name,
         eventTime,
+        location,
         symbol,
         protocolFee,
         numTier,

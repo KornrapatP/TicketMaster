@@ -20,6 +20,7 @@ contract Factory {
     function createCollection(
         string memory name_,
         uint256 eventTime_,
+        string memory location_,
         string memory symbol_,
         uint8 protocolFee_,
         uint8 numTier_,
@@ -30,6 +31,7 @@ contract Factory {
         ConcertTickets collection = new ConcertTickets(
             name_,
             eventTime_,
+            location_,
             symbol_,
             protocolFee_,
             numTier_,
