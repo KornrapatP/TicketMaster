@@ -8,6 +8,7 @@ symbol = "TEX"
 location = "Berkeley"
 numTier = 5
 protocolFee = 50
+URI = "TESTURI"
 tierPrice = [1, 10, 100, 1000, 10000]
 tierMaxSupply = [10, 10, 10, 10, 10]
 tierSupply = [0, 0, 0, 0, 0]
@@ -47,6 +48,7 @@ def protocol(owner, artist, fan1, fan2):
         location,
         symbol,
         protocolFee,
+        URI,
         numTier,
         tierMaxSupply,
         tierPrice,

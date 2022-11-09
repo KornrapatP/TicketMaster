@@ -5,10 +5,10 @@ import brownie
 def main():
     acc = accounts.load("deployer")
 
-    # factory = Factory.at("0xe7eECE3919d8e8A43e8d6B569BBCe5Ef0224E2EF")
+    # factory = Factory.at("0x1007A9eD753652d179e87ED158a6BbfD73F102f3")
     # acc = accounts[0]
     # print(factory.ticketCollections({"from": acc}))
-    collection = ConcertTickets.at("0xFd013CC373FFDc24b9A72A3368447304c55F5bd2")
+    collection = ConcertTickets.at("0x2c17d1Dc7B86BCE8e8f1A72dec9dD3969c17F253")
     print(collection.name())
     print(collection.symbol())
     print(collection.eventTime())

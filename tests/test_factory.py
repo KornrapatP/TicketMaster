@@ -7,6 +7,7 @@ name = "TestExample"
 symbol = "TEX"
 location = "Berkeley"
 numTier = 5
+URI = "TESTURI"
 protocolFee = 50
 tierPrice = [1, 10, 100, 1000, 10000]
 tierMaxSupply = [10, 10, 10, 10, 10]
@@ -51,6 +52,7 @@ def test_create_collection(factory, owner, artist, market):
         location,
         symbol,
         protocolFee,
+        URI,
         numTier,
         tierMaxSupply,
         tierPrice,

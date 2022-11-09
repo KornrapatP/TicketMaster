@@ -2,11 +2,12 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/common/ERC2981.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 
 import "../interfaces/IFactory.sol";
 
-contract ConcertTickets is ERC721URIStorage, ERC2981 {
+contract ConcertTickets is ERC721URIStorage, ERC721Enumerable, ERC2981 {
     using Address for address;
 
     address private _artist;
@@ -182,15 +183,37 @@ contract ConcertTickets is ERC721URIStorage, ERC2981 {
         public
         view
         virtual
-        override(ERC721, ERC2981)
+        override(ERC721, ERC2981, ERC721Enumerable)
         returns (bool)
     {
         return super.supportsInterface(interfaceId);
     }
 
-    function _burn(uint256 tokenId) internal virtual override {
+    function _burn(uint256 tokenId)
+        internal
+        virtual
+        override(ERC721, ERC721URIStorage)
+    {
         super._burn(tokenId);
         _resetTokenRoyalty(tokenId);
+    }
+
+    function _beforeTokenTransfer(
+        address from,
+        address to,
+        uint256 tokenId,
+        uint256 batchSize
+    ) internal override(ERC721, ERC721Enumerable) {
+        super._beforeTokenTransfer(from, to, tokenId, batchSize);
+    }
+
+    function tokenURI(uint256 tokenId)
+        public
+        view
+        override(ERC721, ERC721URIStorage)
+        returns (string memory)
+    {
+        return super.tokenURI(tokenId);
     }
 
     function _transfer(
@@ -204,11 +227,26 @@ contract ConcertTickets is ERC721URIStorage, ERC2981 {
         super._transfer(from, to, tokenId);
     }
 
-    function approve(address to, uint256 tokenId) public virtual override {
+    function approve(address to, uint256 tokenId)
+        public
+        virtual
+        override(ERC721, IERC721)
+    {
         // Only approve market
         if (_locked) {
             require(to == market(), "TICKET: Only approve market");
         }
         super.approve(to, tokenId);
+    }
+
+    function setApprovalForAll(address operator, bool approved)
+        public
+        virtual
+        override(ERC721, IERC721)
+    {
+        if (_locked) {
+            require(false, "TICKET: Only approve market");
+        }
+        _setApprovalForAll(_msgSender(), operator, approved);
     }
 }
